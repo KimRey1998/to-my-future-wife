@@ -53,11 +53,11 @@
         .card {
             text-align: center;
             background: var(--white);
-            padding: 4rem 2rem;
+            padding: 4.5rem 2rem;
             border-radius: 50px;
             box-shadow: 0 20px 40px rgba(157, 2, 8, 0.05);
             width: 90%;
-            max-width: 480px;
+            max-width: 500px;
             border: 1px solid rgba(255,255,255,0.5);
             backdrop-filter: blur(15px);
             z-index: 50;
@@ -119,7 +119,7 @@
             position: relative; 
             align-items: center; 
             margin-top: 50px; 
-            z-index: 1000; /* Extremely high to ensure clickability */
+            z-index: 1000;
         }
 
         button { 
@@ -139,25 +139,26 @@
         }
         
         button:active { transform: scale(0.95); }
-
-        .final-yes-btn, #yesBtn { 
-            background: var(--primary-berry); 
-            color: white; 
-            box-shadow: 0 10px 20px rgba(157, 2, 8, 0.2);
-        }
-        
+        .final-yes-btn, #yesBtn { background: var(--primary-berry); color: white; box-shadow: 0 10px 20px rgba(157, 2, 8, 0.2); }
         .evasive-no { background-color: #f8f9fa; color: #adb5bd; border: 1px solid #e9ecef; position: absolute; }
 
+        /* FINAL REVEAL WORD ART */
         #final-reveal { display: none; text-align: center; z-index: 2000; }
-        
         .word-art {
             font-family: 'Alex Brush', cursive;
-            font-size: 5rem;
-            background: linear-gradient(45deg, #9d0208, #ff4d6d, #d00000);
+            font-size: 6.5rem; /* LARGER */
+            background: linear-gradient(to right, #9d0208, #ff4d6d, #ff8fa3, #ff4d6d, #9d0208); /* MORE COLORFUL */
+            background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            animation: shine 3s linear infinite;
             margin-top: 20px;
             display: inline-block;
+            filter: drop-shadow(0 5px 15px rgba(157, 2, 8, 0.2));
+        }
+
+        @keyframes shine {
+            to { background-position: 200% center; }
         }
     </style>
 </head>
@@ -267,9 +268,7 @@
         document.querySelectorAll('.memory-card, .text-only').forEach(c => observer.observe(c));
 
         function handleGlobalClick(e) {
-            // If clicking a button, let the button's own function handle it
             if (e.target.tagName === 'BUTTON') return;
-
             if (proposalReady && !foreverShown) {
                 document.getElementById('forever-text').style.display = 'block';
                 setTimeout(() => { 
@@ -281,24 +280,23 @@
         }
 
         function finalCelebrate(e) {
-            // This is the function that triggers when "YES!" is clicked
-            e.preventDefault(); 
-            e.stopPropagation();
+            e.preventDefault(); e.stopPropagation();
             
-            const scalar = 3;
-            const heart = confetti.shapeFromText({ text: '❤️', scalar });
-            const defaults = { spread: 360, ticks: 100, gravity: 0.5, decay: 0.94, startVelocity: 30, shapes: [heart], scalar };
+            // Standard Confetti Blast (More reliable)
+            const count = 200;
+            const defaults = { origin: { y: 0.7 }, zIndex: 10000 };
 
-            function shoot() {
-                confetti({ ...defaults, particleCount: 40, scalar: 2 });
-                confetti({ ...defaults, particleCount: 15, scalar: 3 });
-                confetti({ ...defaults, particleCount: 20, scalar: 4 });
+            function fire(particleRatio, opts) {
+                confetti({ ...defaults, ...opts, particleCount: Math.floor(count * particleRatio) });
             }
 
-            shoot();
-            setTimeout(shoot, 150);
-            setTimeout(shoot, 300);
+            fire(0.25, { spread: 26, startVelocity: 55 });
+            fire(0.2, { spread: 60 });
+            fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+            fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+            fire(0.1, { spread: 120, startVelocity: 45 });
 
+            // Final Reveal
             document.getElementById('act2').style.display = 'none';
             document.getElementById('final-reveal').style.display = 'flex';
             document.body.style.background = "#fff9e6";
