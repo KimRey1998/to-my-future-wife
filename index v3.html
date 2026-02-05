@@ -117,8 +117,11 @@
 
         .btn-wrapper { 
             display: none; 
-            justify-content: center; gap: 20px; 
-            min-height: 120px; position: relative; align-items: center; 
+            justify-content: center; 
+            gap: 20px; 
+            min-height: 120px; 
+            position: relative; 
+            align-items: center; 
             margin-top: 50px; 
             z-index: 100;
         }
@@ -135,12 +138,18 @@
             letter-spacing: 0.1em;
             position: relative;
             z-index: 110;
+            transition: transform 0.2s ease;
         }
-        #yesBtn, #finalYesBtn { background: var(--primary-berry); color: white; pointer-events: auto; }
+        
+        button:active { transform: scale(0.95); }
+
+        #yesBtn, .final-yes-btn { background: var(--primary-berry); color: white; pointer-events: auto; }
+        
+        /* Evasive No only for Act 1 */
         .evasive-no { background-color: #f8f9fa; color: #adb5bd; border: 1px solid #e9ecef; position: absolute; pointer-events: auto; }
 
-        /* Final Reveal Word Art Styling */
         #final-reveal { display: none; text-align: center; }
+        
         .word-art {
             font-family: 'Alex Brush', cursive;
             font-size: 5rem;
@@ -150,13 +159,6 @@
             filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.1));
             margin-top: 20px;
             display: inline-block;
-        }
-        .lovey-text {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 2.2rem;
-            font-style: italic;
-            color: #555;
-            margin-top: 10px;
         }
     </style>
 </head>
@@ -199,8 +201,8 @@
                 <h2 id="qText">Will you be my Valentine?</h2>
                 <div id="forever-text">Forever?</div>
                 <div class="btn-wrapper" id="btnAreaFinal">
-                    <button id="finalYesBtn" onclick="finalCelebrate(event)">Yes!</button>
-                    <button id="noBtn2" class="evasive-no" onmouseover="moveButton(this, 'finalYesBtn')" ontouchstart="moveButton(this, 'finalYesBtn')">No</button>
+                    <button class="final-yes-btn" onclick="finalCelebrate(event)">Yes!</button>
+                    <button class="final-yes-btn" onclick="finalCelebrate(event)">Yes!</button>
                 </div>
             </div>
         </div>
@@ -266,6 +268,9 @@
         document.querySelectorAll('.memory-card, .text-only').forEach(c => observer.observe(c));
 
         function handleGlobalClick(e) {
+            // Check if we are clicking a button. If yes, don't trigger the "Forever" reveal logic here.
+            if (e.target.tagName === 'BUTTON') return;
+
             if (proposalReady && !foreverShown) {
                 document.getElementById('forever-text').style.display = 'block';
                 setTimeout(() => { document.getElementById('btnAreaFinal').style.display = 'flex'; }, 600);
@@ -276,10 +281,9 @@
         function finalCelebrate(e) {
             e.preventDefault(); e.stopPropagation();
             
-            // Heart Confetti Logic
+            // Heart Hearts Hearts!
             const scalar = 3;
             const heart = confetti.shapeFromText({ text: '❤️', scalar });
-
             const defaults = { spread: 360, ticks: 100, gravity: 0.5, decay: 0.94, startVelocity: 30, shapes: [heart], scalar };
 
             function shoot() {
