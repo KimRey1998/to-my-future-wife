@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Our Story ❤️</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,600&family=Outfit:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>Kim & Kat ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,600&family=Outfit:wght@300;400;700&family=Alex+Brush&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root {
@@ -43,7 +43,6 @@
             100% { transform: translateY(-20vh) rotate(360deg); }
         }
 
-        /* Layouts */
         .act-container {
             display: flex;
             justify-content: center;
@@ -140,7 +139,25 @@
         #yesBtn, #finalYesBtn { background: var(--primary-berry); color: white; pointer-events: auto; }
         .evasive-no { background-color: #f8f9fa; color: #adb5bd; border: 1px solid #e9ecef; position: absolute; pointer-events: auto; }
 
+        /* Final Reveal Word Art Styling */
         #final-reveal { display: none; text-align: center; }
+        .word-art {
+            font-family: 'Alex Brush', cursive;
+            font-size: 5rem;
+            background: linear-gradient(45deg, #9d0208, #ff4d6d, #d00000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.1));
+            margin-top: 20px;
+            display: inline-block;
+        }
+        .lovey-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.2rem;
+            font-style: italic;
+            color: #555;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body onclick="handleGlobalClick(event)">
@@ -179,7 +196,7 @@
 
         <div id="act3-container" class="act-container">
             <div class="card" id="proposalCard">
-                <h2 id="qText">Will you marry me?</h2>
+                <h2 id="qText">Will you be my Valentine?</h2>
                 <div id="forever-text">Forever?</div>
                 <div class="btn-wrapper" id="btnAreaFinal">
                     <button id="finalYesBtn" onclick="finalCelebrate(event)">Yes!</button>
@@ -191,8 +208,8 @@
 
     <div id="final-reveal" class="act-container">
         <div class="card">
-            <h1 style="font-size: 3.5rem;">I love you forever! 💍</h1>
-            <img src="Kim_Reyes.jpg" class="story-img" style="margin-top: 30px; border: 10px solid white;">
+            <h1 style="font-size: 2.8rem;">I love you forever lovey! ❤️</h1>
+            <div class="word-art">Kim & Kat</div>
         </div>
     </div>
 
@@ -228,8 +245,7 @@
         }
 
         function startStory(e) {
-            e.preventDefault();
-            e.stopPropagation();
+            e.preventDefault(); e.stopPropagation();
             document.getElementById('faceBg').innerHTML = '';
             document.getElementById('act1').style.display = 'none';
             document.getElementById('act2').style.display = 'flex';
@@ -258,26 +274,25 @@
         }
 
         function finalCelebrate(e) {
-            e.preventDefault();
-            e.stopPropagation();
+            e.preventDefault(); e.stopPropagation();
             
-            // Trigger Confetti Blast
-            const duration = 5 * 1000;
-            const animationEnd = Date.now() + duration;
-            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 1000 };
+            // Heart Confetti Logic
+            const scalar = 3;
+            const heart = confetti.shapeFromText({ text: '❤️', scalar });
 
-            const randomInRange = (min, max) => Math.random() * (max - min) + min;
+            const defaults = { spread: 360, ticks: 100, gravity: 0.5, decay: 0.94, startVelocity: 30, shapes: [heart], scalar };
 
-            const interval = setInterval(function() {
-                const timeLeft = animationEnd - Date.now();
-                if (timeLeft <= 0) return clearInterval(interval);
+            function shoot() {
+                confetti({ ...defaults, particleCount: 40, scalar: 2 });
+                confetti({ ...defaults, particleCount: 15, scalar: 3 });
+                confetti({ ...defaults, particleCount: 20, scalar: 4 });
+            }
 
-                const particleCount = 50 * (timeLeft / duration);
-                confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }, colors: ['#9d0208', '#ffffff'] });
-                confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }, colors: ['#9d0208', '#ffffff'] });
-            }, 250);
+            setTimeout(shoot, 0);
+            setTimeout(shoot, 150);
+            setTimeout(shoot, 300);
 
-            // Transition to Final Reveal
+            // Final Reveal
             document.getElementById('act2').style.display = 'none';
             document.getElementById('final-reveal').style.display = 'flex';
             document.body.style.background = "#fff9e6";
