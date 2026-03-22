@@ -109,6 +109,12 @@
             font-style: italic;
             display: none;
             margin-top: 10px;
+            animation: fadeInOut 1.5s ease-in-out;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
         }
 
         .btn-wrapper { 
@@ -145,7 +151,6 @@
             border: 2px solid var(--primary-berry);
         }
 
-        /* The Swarm Styling */
         .swarm-yes {
             position: fixed;
             z-index: 1500;
@@ -159,7 +164,7 @@
 
         @keyframes swarmPop {
             from { transform: scale(0) rotate(-10deg); opacity: 0; }
-            to { opacity: 1; } /* Transform is handled by JS for random rotation */
+            to { opacity: 1; }
         }
 
         #final-reveal { display: none; text-align: center; z-index: 2000; }
@@ -219,8 +224,6 @@
             <div class="card" id="proposalCard">
                 <h2 id="qText">Now let me ask you again... <br>Will you be my Valentine?</h2>
                 <div id="forever-text">Forever?</div>
-                <div class="btn-wrapper" style="visibility: hidden;">
-                    </div>
             </div>
         </div>
     </div>
@@ -280,44 +283,43 @@
         function handleGlobalClick(e) {
             if (e.target.tagName === 'BUTTON') return;
             if (proposalReady && !foreverShown) {
+                // 1. Show the "Forever?" text immediately
                 document.getElementById('forever-text').style.display = 'block';
-                spawnSwarm(); // 75 BUTTON TAKEOVER
+                
+                // 2. WAIT 2.5 seconds before spawning the swarm
+                setTimeout(() => { 
+                    spawnSwarm(); 
+                    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                }, 2500); // Cinematic Delay
+                
                 foreverShown = true;
             }
         }
 
         function spawnSwarm() {
-            const count = 75; // Increased to 75 as requested
+            const count = 75; 
             for (let i = 0; i < count; i++) {
                 setTimeout(() => {
                     const btn = document.createElement('button');
                     btn.className = 'swarm-yes';
                     btn.innerHTML = 'YES!';
-                    
-                    // Spread across the full viewport
                     const x = Math.random() * (window.innerWidth - 80);
                     const y = Math.random() * (window.innerHeight - 40);
-                    
-                    // Random tilts and sizes
-                    const rotation = (Math.random() - 0.5) * 60; // Up to 60 deg tilt
+                    const rotation = (Math.random() - 0.5) * 60;
                     const scale = 0.4 + Math.random() * 1.3; 
-                    
                     btn.style.left = x + 'px';
                     btn.style.top = y + 'px';
                     btn.style.transform = `rotate(${rotation}deg) scale(${scale})`;
-                    
                     btn.onclick = finalCelebrate;
                     document.body.appendChild(btn);
-                }, i * 20); // Faster pop-in for the larger count
+                }, i * 20);
             }
         }
 
         function finalCelebrate(e) {
             if (e) { e.preventDefault(); e.stopPropagation(); }
-            
             const swarm = document.querySelectorAll('.swarm-yes');
             swarm.forEach(b => b.remove());
-
             const count = 200;
             const defaults = { origin: { y: 0.7 }, zIndex: 10000 };
             function fire(particleRatio, opts) {
@@ -327,7 +329,6 @@
             fire(0.2, { spread: 60 });
             fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
             fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
-
             document.getElementById('act2').style.display = 'none';
             document.getElementById('final-reveal').style.display = 'flex';
             document.body.style.background = "#fff9e6";
